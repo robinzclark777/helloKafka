@@ -1,28 +1,16 @@
 # Purpose 
 
-The Merlin SoS message transformation service receives data from the Kafka `input` topics, determines the 
-content-type of the message, transforms its contents to `JSON` and then routes both the `XML` and `JSON` data to the 
-appropriate topics. This service also ensures that the required topics are in-place at start-up.
+This is a standalone microservice that contains bits and pieces of code from the MERLIN_SOS_ENDPOINT and the MERLIN_Microservice_POC.  
 
 # Project Structure
 
 * `src/main/java` - the service source code
-* `src/main/test` - unit tests
-* `src/main/kubernetes` - `Kubernetes` artifacts
 
-This is a `Spring Boot` application which is deployed in `Kubernetes`. The container is built using the `jib` plugin
-for `Maven`.
+This is a `Spring Boot` application which should be deployed locally. I am running it in Spring Tool Suite 3 so that I can run the debugger.
 
 ## Configuration
 
-The application configuration is handled through a `Kubernetes` `ConfigMap` which is automatically read in by `Spring
-Boot` at deployment time. The following properties are supported:
-
-* [required]`mil.afdcgs.merlin.sos.kafka.bootstrap-server`: the `DNS` name of the `Kafka` bootstrap server to connect 
-  to.
-* [default 1] `mil.afdcgs.merlin.sos.kafka.partition-count`: the number of partitions for each created topic. 
-* [default 1] `mil.afdcgs.merlin.sos.kafka.replica-count`: the number of partition replicas to create across the 
-  cluster. This number can't exceed the number of nodes in the cluster. 
+Right now the application has a hard-coded value for the kafka server.  Kafka is running locally on port 9092.
   
 ## Dependencies
 
@@ -38,38 +26,16 @@ To build the project:
 mvn clean install
 ```
 
-This will create a `Docker` container image and upload it to the local `Docker` repository.
 
 # Deployment
 ## Local Development
-For local development and testing, the process for making the built images available to the `kubernetes` cluster is 
-dependent upon the `Kubernetes` 
+Just right click on HelloKafkaApplication.java in the Project Explorer view and choose either Run As or Debug As Spring Boot App.
 
-Note: If you're running on Docker Desktop then this step is not required.
+# Testing
+In order to test the application run the following curl command from git bash:
+` curl -v localhost:8080/hello -H 'Content-Type:application/json' -d '{"name": "Elrond", "role": "Elf Lord"}'`
 
-### On `k3s` *with* a local Docker registry desployed in the cluster:
-```shell
-$ docker push registry.local/hello-kafka-service:latest
-```
-
-### On `k3s` *without* a Docker registry deployed in the cluster:
-```shell
-$ docker save --output target/hello-kafka-service-latest.tar registry.local/hello-kafka-service:latest
-```
-```shell
-$ sudo k3s ctr images import target/hello-kafka-service-latest.tar
-```
-
-## Create Kubernetes Artifcats
-```shell
-$ kubectl apply -f src/main/kubernetes/hello-kafka-service.yaml
-```
-
-## Uninstall
-It can be removed with:
-```shell
-$ kubectl delete -f src/main/kubernetes/hello-kafka-service.yaml
-```
+This will send the json content to the SosEndpointResource.java which is a RestController that expects a post request.
 
 
 
