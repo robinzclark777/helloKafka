@@ -1,7 +1,8 @@
-package mil.dia.merlin.sos.kafka;
+package mil.dia.merlin.hellokafka;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
@@ -25,18 +26,24 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @EnableKafka
 @Configuration
-class SosKafkaConfiguration {
-    @Value("${mil.afdcgs.merlin.sos.kafka.partition-count:1}")
-    private Integer partitionCount;
+class HelloKafkaConfiguration {
+    //@Value("${mil.afdcgs.merlin.HelloKafka.kafka.partition-count:1}")
+    private Integer partitionCount = 1;
 
-    @Value("${mil.afdcgs.merlin.sos.kafka.replica-count:1}")
-    private Integer replicaCount;
+    //@Value("${mil.afdcgs.merlin.HelloKafka.kafka.replica-count:1}")
+    private Integer replicaCount = 1;
 
-    @Value("${mil.afdcgs.merlin.sos.kafka.bootstrap-server}")
-    private String bootstrapServer;
+    String bootstrapServer = "localhost:9092";
+    
+    
+    @Bean
+    public Consumer<String> createConsumer() {
+    	return s -> System.out.println(s);
+    }
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -47,55 +54,15 @@ class SosKafkaConfiguration {
 
     @Bean
     public NewTopic sensorInput() {
-        return TopicBuilder.name("merlin-sensor-input")
+        return TopicBuilder.name("hello-kafka-input")
                 .partitions(partitionCount)
                 .replicas(replicaCount)
                 .build();
     }
 
     @Bean
-    public NewTopic observationInput() {
-        return TopicBuilder.name("merlin-observation-input")
-                .partitions(partitionCount)
-                .replicas(replicaCount)
-                .build();
-    }
-
-    @Bean
-    public NewTopic observationsXml() {
-        return TopicBuilder.name( "merlin-observations-xml")
-                .partitions(partitionCount)
-                .replicas(replicaCount)
-                .build();
-    }
-
-    @Bean
-    public NewTopic observationsJson() {
-        return TopicBuilder.name("merlin-observations-json")
-                .partitions(partitionCount)
-                .replicas(replicaCount)
-                .build();
-    }
-
-    @Bean
-    public NewTopic sensorsXml() {
-        return TopicBuilder.name( "merlin-sensors-xml")
-                .partitions(partitionCount)
-                .replicas(replicaCount)
-                .build();
-    }
-
-    @Bean
-    public NewTopic sensorsJson() {
-        return TopicBuilder.name("merlin-sensors-json")
-                .partitions(partitionCount)
-                .replicas(replicaCount)
-                .build();
-    }
-
-    @Bean
-    public ConsumerFactory<Integer, String> consumerFactory(){
-        Map<String,Object> props = new HashMap<String,Object>();
+    public ConsumerFactory<Integer, String> consumerFactory() {
+        Map<String, Object> props = new HashMap<String, Object>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -103,6 +70,15 @@ class SosKafkaConfiguration {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         return new DefaultKafkaConsumerFactory<>(props);
     }
+    
+    @SuppressWarnings("unchecked")
+ 	@Bean
+     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer, String>> kafkaListenerContainerFactory() {
+         @SuppressWarnings("rawtypes")
+ 		ConcurrentKafkaListenerContainerFactory<Integer, String> factory = new ConcurrentKafkaListenerContainerFactory();
+         factory.setConsumerFactory(consumerFactory());
+         return factory;
+     }
 
     @Bean
     public ProducerFactory<Integer, String> producerFactory() {
@@ -113,17 +89,9 @@ class SosKafkaConfiguration {
         return new DefaultKafkaProducerFactory<>(props);
     }
 
-    @Bean
-    public KafkaTemplate<Integer, String> kafkaTemplate(ProducerFactory producerFactory) {
+    @SuppressWarnings("unchecked")
+	@Bean
+    public KafkaTemplate<Integer, String> kafkaTemplate(@SuppressWarnings("rawtypes") ProducerFactory producerFactory) {
         return new KafkaTemplate<Integer, String>(producerFactory);
     }
-
-    @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer,String>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
-                new ConcurrentKafkaListenerContainerFactory();
-        factory.setConsumerFactory(consumerFactory());
-        return factory;
-    }
 }
-

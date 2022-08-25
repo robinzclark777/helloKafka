@@ -28,7 +28,7 @@ kind: ConfigMap
 apiVersion: v1
 
 metadata:
-  name: sos-transform-service-config
+  name: hello-kafka-service-config
 data:
   application.json:
     ' {
@@ -42,25 +42,26 @@ kind: Deployment
 apiVersion: apps/v1
 
 metadata:
-  name: sos-transformation-service
+  name: hello-kafka-service
   labels:
-    name: sos-transformation-service
+    name: hello-kafka-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: sos-transformation-service
+      name: hello-kafka-service
   template:
     metadata:
       labels:
-        name: sos-transformation-service
+        name: hello-kafka-service
     spec:
       containers:
         - name: test-app
-          image: registry.local/sos-transformation-service:latest
+          image: registry.local/hello-kafka-service:latest
+          imagePullPolicy: Never
           env:
             - name: SPRING_APPLICATION_JSON
               valueFrom:
                 configMapKeyRef:
-                  name: sos-transform-service-config
+                  name: hello-kafka-service-config
                   key: application.json

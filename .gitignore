@@ -1,3 +1,9 @@
 .idea/
-sos.iml
+HelloKafka.iml
 target/
+.classpath
+.project
+.settings
+.springBeans
+.vscode
+

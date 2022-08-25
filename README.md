@@ -49,26 +49,26 @@ Note: If you're running on Docker Desktop then this step is not required.
 
 ### On `k3s` *with* a local Docker registry desployed in the cluster:
 ```shell
-$ docker push registry.local/sos-transformation-service:latest
+$ docker push registry.local/hello-kafka-service:latest
 ```
 
 ### On `k3s` *without* a Docker registry deployed in the cluster:
 ```shell
-$ docker save --output target/sos-transformation-service-latest.tar registry.local/sos-transformation-service:latest
+$ docker save --output target/hello-kafka-service-latest.tar registry.local/hello-kafka-service:latest
 ```
 ```shell
-$ sudo k3s ctr images import target/sos-transformation-service-latest.tar
+$ sudo k3s ctr images import target/hello-kafka-service-latest.tar
 ```
 
 ## Create Kubernetes Artifcats
 ```shell
-$ kubectl apply -f src/main/kubernetes/sos-transformation-service.yaml
+$ kubectl apply -f src/main/kubernetes/hello-kafka-service.yaml
 ```
 
 ## Uninstall
 It can be removed with:
 ```shell
-$ kubectl delete -f src/main/kubernetes/sos-transformation-service.yaml
+$ kubectl delete -f src/main/kubernetes/hello-kafka-service.yaml
 ```
 
 
