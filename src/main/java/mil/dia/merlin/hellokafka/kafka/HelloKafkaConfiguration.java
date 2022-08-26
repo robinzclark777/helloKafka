@@ -1,4 +1,4 @@
-package mil.dia.merlin.hellokafka;
+package mil.dia.merlin.hellokafka.kafka;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;

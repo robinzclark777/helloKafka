@@ -1,4 +1,4 @@
-package mil.dia.merlin.hellokafka;
+package mil.dia.merlin.hellokafka.kafka;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

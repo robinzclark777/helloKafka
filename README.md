@@ -10,7 +10,39 @@ This is a `Spring Boot` application which should be deployed locally. I am runni
 
 ## Configuration
 
-Right now the application has a hard-coded value for the kafka server.  Kafka is running locally on port 9092.
+Right now the application has a hard-coded value for the kafka server.  Kafka should be running on port 9092.
+
+### In order to run Kafka locally, download the latest Kafka release and unzip it in its own directory:
+
+```shell
+tar -xzf kafka_2.13-3.2.1.tgz
+cd kafka_2.13-3.2.1
+```
+
+Start zookeeper service:
+
+```shell
+bin/zookeeper-server-start.sh config/zookeeper.properties
+```
+
+Start the Kafka broker service:
+
+```shell
+bin/kafka-server-start.sh config/server.properties
+```
+
+### In order to run Kafka in a Docker container:
+
+cd to your project root directory and run:
+
+```shell
+docker-compose -f src/main/resources/simple-docker-kafka.yml up
+```
+
+### Kafka Troubleshooting (Substitute for Kafka UI)
+
+In order to see kafka topics, install the "Tools for Apache Kafka" by Jeppe Andersen extension in VS Code.
+
   
 ## Dependencies
 
@@ -22,6 +54,7 @@ The project uses these modules:
 # Build
 
 To build the project:
+
 ```shell
 mvn clean install
 ```
@@ -33,7 +66,10 @@ Just right click on HelloKafkaApplication.java in the Project Explorer view and 
 
 # Testing
 In order to test the application run the following curl command from git bash:
-` curl -v localhost:8080/hello -H 'Content-Type:application/json' -d '{"name": "Elrond", "role": "Elf Lord"}'`
+
+```shell
+curl -v localhost:8080/hello -H 'Content-Type:application/json' -d '{"name": "Elrond", "role": "Elf Lord"}'
+```
 
 This will send the json content to the SosEndpointResource.java which is a RestController that expects a post request.
 
