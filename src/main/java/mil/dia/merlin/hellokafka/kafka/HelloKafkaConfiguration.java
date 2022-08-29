@@ -31,19 +31,26 @@ import java.util.function.Consumer;
 @EnableKafka
 @Configuration
 class HelloKafkaConfiguration {
-    //@Value("${mil.afdcgs.merlin.HelloKafka.kafka.partition-count:1}")
-    private Integer partitionCount = 1;
+    @Value("${mil.afdcgs.merlin.HelloKafka.kafka.partition-count:1}")
+    private Integer partitionCount;
 
-    //@Value("${mil.afdcgs.merlin.HelloKafka.kafka.replica-count:1}")
-    private Integer replicaCount = 1;
+    @Value("${mil.afdcgs.merlin.HelloKafka.kafka.replica-count:1}")
+    private Integer replicaCount;
 
-    String bootstrapServer = "localhost:9092";
+    @Value("${mil.dia.merlin.sos.kafka.bootstrap-server}")
+    private String bootstrapServer;
     
+//    @SuppressWarnings("unchecked")
+//	@Bean
+//    public Consumer<String> createSomethingElse(@SuppressWarnings("rawtypes") KafkaTemplate kafkaTemplate) {
+//    	return s -> kafkaTemplate.send("hello-kafka-input", s);
+//    }
     
-    @Bean
-    public Consumer<String> createConsumer() {
-    	return s -> System.out.println(s);
-    }
+//    @Bean
+//    @FunctionalInterface
+//    public Consumer<String> createConsumer() {
+//    	return s -> System.out.println(s);
+//    }
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -60,25 +67,25 @@ class HelloKafkaConfiguration {
                 .build();
     }
 
-    @Bean
-    public ConsumerFactory<Integer, String> consumerFactory() {
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "merlin-phase1");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        return new DefaultKafkaConsumerFactory<>(props);
-    }
-    
-    @SuppressWarnings("unchecked")
- 	@Bean
-     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer, String>> kafkaListenerContainerFactory() {
-         @SuppressWarnings("rawtypes")
- 		ConcurrentKafkaListenerContainerFactory<Integer, String> factory = new ConcurrentKafkaListenerContainerFactory();
-         factory.setConsumerFactory(consumerFactory());
-         return factory;
-     }
+//    @Bean
+//    public ConsumerFactory<Integer, String> consumerFactory() {
+//        Map<String, Object> props = new HashMap<String, Object>();
+//        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+//        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
+//        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        props.put(ConsumerConfig.GROUP_ID_CONFIG, "merlin-phase1");
+//        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+//        return new DefaultKafkaConsumerFactory<>(props);
+//    }
+//    
+//    @SuppressWarnings("unchecked")
+// 	@Bean
+//     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer, String>> kafkaListenerContainerFactory() {
+//         @SuppressWarnings("rawtypes")
+// 		ConcurrentKafkaListenerContainerFactory<Integer, String> factory = new ConcurrentKafkaListenerContainerFactory();
+//         factory.setConsumerFactory(consumerFactory());
+//         return factory;
+//     }
 
     @Bean
     public ProducerFactory<Integer, String> producerFactory() {

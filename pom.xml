@@ -57,40 +57,35 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
+ <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
-                <artifactId>jib-maven-plugin</artifactId>
-                <groupId>com.google.cloud.tools</groupId>
-                <version>${jib-docker-maven-plugin.version}</version>
-                <configuration>
-                    <container>
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                    </container>
-                    <to>
-                        <image>${docker-registry}/${project.artifactId}</image>
-                        <tags>
-                            <tag>${project.version}</tag>
-                        </tags>
-                    </to>
-                </configuration>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
-                        <id>build-image</id>
                         <goals>
-                            <goal>dockerBuild</goal>
+                            <goal>prepare-agent</goal>
                         </goals>
-                        <phase>package</phase>
                     </execution>
                     <execution>
-                        <id>push-image</id>
-                        <phase>deploy</phase>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>build</goal>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
